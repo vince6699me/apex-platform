@@ -14,7 +14,7 @@ export class AIIntelligenceService {
       const quote = await MarketDataService.getQuoteFromAlphaVantage(symbol);
       const recentHistory = history.slice(-20);
       
-      const ai = new GoogleGenAI({ apiKey: this.GEMINI_KEY });
+      const ai = new (GoogleGenAI as any)(this.GEMINI_KEY as string);
       const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const prompt = `Analyze ${symbol} trading data:

@@ -11,6 +11,87 @@ const ProgressBar = ({ value, colorClass }: { value: number; colorClass: string 
   </div>
 );
 
+const SentimentCard: React.FC<{ insight: SentimentInsight }> = ({ insight }) => (
+  <Card className="bg-card/50 hover:bg-card/80 transition-colors border-border/50">
+    <CardContent className="p-4 space-y-3">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="text-sm text-muted-foreground">{insight.name}</div>
+          <div className="text-xl font-bold">{insight.symbol}</div>
+        </div>
+        <div className="flex items-center">
+          <Badge 
+            className={insight.sentimentLabel === "Bullish" ? "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30" : "bg-red-500/20 text-red-500 hover:bg-red-500/30"}
+            variant="default"
+          >
+            {insight.sentimentLabel as any}
+          </Badge>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2 text-sm">
+        <span className={insight.change >= 0 ? "text-green-500" : "text-red-500"}>
+           {insight.change > 0 && <TrendingUp className="inline h-3 w-3 mr-1" />}
+           {insight.change > 0 && "+"}{insight.change}
+        </span>
+        <span className="text-muted-foreground text-sm">{insight.signalCount} signals</span>
+      </div>
+
+      <div className="space-y-3 pt-2 border-t border-border/50">
+        {insight.signals.map((signal, i) => (
+          <div key={i} className="flex justify-between items-start gap-2">
+            <div className="flex-1">
+              <p className="text-sm leading-tight text-foreground/90">{signal.message}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{signal.source}</p>
+            </div>
+            <span className="text-sm font-mono opacity-70">{signal.score}</span>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const SmartMoneyCard: React.FC<{ item: SmartMoneyPattern }> = ({ item }) => (
+  <Card className="bg-card/50 hover:bg-card/80 transition-colors border-border/50">
+    <CardContent className="p-4 flex flex-col h-full justify-between gap-3">
+      <div className="flex justify-between items-start">
+        <div>
+           <div className="text-sm text-muted-foreground">{item.symbol}</div>
+           <div className="font-bold text-base">{item.concept}</div>
+        </div>
+        <div className="flex items-center">
+          <Badge variant="outline" className="text-xs h-5">{item.timeframe as any}</Badge>
+        </div>
+      </div>
+      
+      <div className="flex gap-2">
+         <Badge 
+            variant="default" 
+            className={
+                item.bias === "Bullish" ? "bg-yellow-500 text-black hover:bg-yellow-600" : 
+                item.bias === "Bearish" ? "bg-red-500 text-white hover:bg-red-600" : 
+                "bg-gray-500 text-white hover:bg-gray-600"
+            }
+         >
+            {item.bias as any}
+         </Badge>
+         <Badge variant="secondary" className="bg-muted text-muted-foreground">{item.zone as any}</Badge>
+      </div>
+
+      <p className="text-sm text-muted-foreground leading-snug min-h-[2.5rem]">{item.description}</p>
+      
+      <div className="space-y-1">
+         <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{item.confidence}% confidence</span>
+            <span>Retested {item.retested}</span>
+         </div>
+         <ProgressBar value={item.confidence} colorClass="bg-green-500" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function AIIntelligence() {
   const [analysis, setAnalysis] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
@@ -64,9 +145,14 @@ export default function AIIntelligence() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Bias</span>
-                    <Badge className={analysis[symbol].bias === 'Bullish' ? 'bg-green-500' : 'bg-red-500'}>
-                      {analysis[symbol].bias}
-                    </Badge>
+                    <div className="flex items-center">
+                      <Badge 
+                        className={analysis[symbol].bias === 'Bullish' ? 'bg-green-500' : 'bg-red-500'}
+                        variant="default"
+                      >
+                        {analysis[symbol].bias as any}
+                      </Badge>
+                    </div>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Levels</span>
@@ -114,15 +200,18 @@ export default function AIIntelligence() {
                                 <TableRow key={s.symbol} className="border-border/50 hover:bg-muted/20">
                                     <TableCell className="font-bold">{s.symbol}</TableCell>
                                     <TableCell>
-                                        <Badge 
-                                            className={
-                                                s.direction === 'Bullish' ? 'bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30' : 
-                                                s.direction === 'Bearish' ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' : 
-                                                'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
-                                            }
-                                        >
-                                            {s.direction}
-                                        </Badge>
+                                        <div className="flex items-center">
+                                            <Badge 
+                                                className={
+                                                    s.direction === 'Bullish' ? 'bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30' : 
+                                                    s.direction === 'Bearish' ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' : 
+                                                    'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                                                }
+                                                variant="default"
+                                            >
+                                                {s.direction as any}
+                                            </Badge>
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
