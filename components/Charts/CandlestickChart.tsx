@@ -155,15 +155,16 @@ export function CandlestickChart({ symbol, height = 500, showVolume = true, indi
       chart.priceScale('right').applyOptions({ scaleMargins: priceScaleMargins });
 
       if (showVolume) {
-          chart.priceScale('volume-scale').applyOptions({
-              scaleMargins: { top: hasOscillator ? 0.6 : 0.8, bottom: hasOscillator ? 0.35 : 0.0 },
-          });
           const volumeSeries = chart.addHistogramSeries({
               color: '#26a69a',
               priceFormat: { type: 'volume' },
               priceScaleId: 'volume-scale',
           });
           volumeSeriesRef.current = volumeSeries;
+
+          chart.priceScale('volume-scale').applyOptions({
+              scaleMargins: { top: hasOscillator ? 0.6 : 0.8, bottom: hasOscillator ? 0.35 : 0.0 },
+          });
       }
 
       const rawData = MarketDataService.generateHistoricalData(symbol, 500);
