@@ -1,7 +1,43 @@
 
-import { PatternScanResult, SentimentInsight, AnomalyAlert, SmartMoneyPattern, ConfluenceAnalysis, PrioritySignal } from "../types";
+import { PatternScanResult, SentimentInsight, AnomalyAlert, SmartMoneyPattern, ConfluenceAnalysis, PrioritySignal, OHLCV } from "../types";
+import { GoogleGenAI } from "@google/genai";
+import { MarketDataService } from "./marketData";
 
 export class AIIntelligenceService {
+  private static GEMINI_KEY = (process.env as any).GEMINI_API_KEY;
+
+  static async analyzeMarketSignals(symbol: string): Promise<string> {
+    if (!this.GEMINI_KEY) return "AI analysis unavailable. Please check your API key.";
+
+    try {
+      const history = await MarketDataService.getHistoryFromPolygon(symbol);
+      const quote = await MarketDataService.getQuoteFromAlphaVantage(symbol);
+      const recentHistory = history.slice(-20);
+      
+      const ai = new GoogleGenAI({ apiKey: this.GEMINI_KEY });
+      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `Analyze ${symbol} trading data:
+      Current Price: ${quote.price}
+      Change: ${quote.change} (${quote.changePercent}%)
+      Recent OHLCV Data (20 periods): ${JSON.stringify(recentHistory)}
+      
+      Provide:
+      1. Technical Bias (Bullish/Bearish/Neutral)
+      2. Key Support/Resistance
+      3. Actionable Signal (Buy/Sell/Hold) with 1-sentence reasoning.
+      Format: JSON { "bias": string, "levels": string, "signal": string, "reason": string }`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      return text;
+    } catch (e) {
+      console.error("AI Analysis failed", e);
+      return "Analysis failed due to technical constraints.";
+    }
+  }
+
   static getSmartMoneyPatterns(): SmartMoneyPattern[] {
     return [
       {
