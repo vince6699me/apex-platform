@@ -3,11 +3,67 @@ import { OHLCV, Quote, WatchlistItem, Position, NewsHeadline } from "../types";
 import { TechnicalIndicatorService } from "./technicalIndicators";
 
 export class MarketDataService {
+  private static ALPHA_VANTAGE_KEY = (process.env as any).ALPHA_VANTAGE_API_KEY;
+  private static POLYGON_KEY = (process.env as any).POLYGON_API_KEY;
+
   private static symbols = ["AAPL", "TSLA", "MSFT", "NVDA", "GOOGL", "AMZN", "META"];
   private static companyNames: Record<string, string> = {
     AAPL: "Apple Inc.", TSLA: "Tesla Inc.", MSFT: "Microsoft Corp.",
     NVDA: "NVIDIA Corp.", GOOGL: "Alphabet Inc.", AMZN: "Amazon.com Inc.", META: "Meta Platforms Inc.",
   };
+
+  static async getHistoryFromPolygon(symbol: string): Promise<OHLCV[]> {
+    if (!this.POLYGON_KEY) return this.generateHistoricalData(symbol);
+    
+    try {
+      const response = await fetch(`https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/2023-01-01/${new Date().toISOString().split('T')[0]}?adjusted=true&sort=asc&apiKey=${this.POLYGON_KEY}`);
+      const data = await response.json();
+      
+      if (data.results) {
+        return data.results.map((r: any) => ({
+          timestamp: r.t,
+          open: r.o,
+          high: r.h,
+          low: r.l,
+          close: r.c,
+          volume: r.v
+        }));
+      }
+    } catch (e) {
+      console.error("Polygon fetch failed", e);
+    }
+    return this.generateHistoricalData(symbol);
+  }
+
+  static async getQuoteFromAlphaVantage(symbol: string): Promise<Quote> {
+    if (!this.ALPHA_VANTAGE_KEY) return this.generateQuote(symbol);
+
+    try {
+      const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${this.ALPHA_VANTAGE_KEY}`);
+      const data = await response.json();
+      const q = data["Global Quote"];
+      
+      if (q) {
+        const price = parseFloat(q["05. price"]);
+        const change = parseFloat(q["09. change"]);
+        return {
+          symbol,
+          price,
+          change,
+          changePercent: parseFloat(q["10. change percent"].replace('%', '')),
+          volume: this.formatVolume(parseInt(q["06. volume"])),
+          high: parseFloat(q["03. high"]),
+          low: parseFloat(q["04. low"]),
+          open: parseFloat(q["02. open"]),
+          previousClose: parseFloat(q["08. previous close"]),
+          timestamp: Date.now()
+        };
+      }
+    } catch (e) {
+      console.error("AlphaVantage fetch failed", e);
+    }
+    return this.generateQuote(symbol);
+  }
 
   static generateHistoricalData(symbol: string, days: number = 500, basePrice: number = 100): OHLCV[] {
     const data: OHLCV[] = [];
