@@ -74,8 +74,12 @@ if short
                       className="w-32 font-bold font-mono tracking-wide"
                     />
                     <div className="flex gap-2">
-                        <Badge variant="secondary" className="bg-muted text-muted-foreground font-mono">Spot ${analysis.spotPrice}</Badge>
-                        <Badge variant="secondary" className="bg-muted text-muted-foreground font-mono">ATR {analysis.atr}</Badge>
+                        <div className="flex items-center">
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground font-mono">Spot ${analysis.spotPrice as any}</Badge>
+                        </div>
+                        <div className="flex items-center">
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground font-mono">ATR {analysis.atr as any}</Badge>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -129,7 +133,9 @@ if short
                             {analysis.aiPatternScan.patterns.map((p, i) => (
                                 <div key={i} className="flex justify-between items-center text-sm">
                                     <span className="text-muted-foreground">{p.name}</span>
-                                    <Badge variant={getBadgeVariant(p.bias)} className="text-xs h-5 px-1.5">{p.bias}</Badge>
+                                    <div className="flex items-center">
+                                      <Badge variant={getBadgeVariant(p.bias)} className="text-xs h-5 px-1.5">{p.bias as any}</Badge>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -247,7 +253,9 @@ if short
                                             </Badge>
                                         )}
                                     </div>
-                                    <Badge variant="secondary" className="bg-muted text-xs">{sig.edge}% edge</Badge>
+                                    <div className="flex items-center">
+                                      <Badge variant="secondary" className="bg-muted text-xs">{sig.edge as any}% edge</Badge>
+                                    </div>
                                 </div>
                                 <div>
                                     <div className={`text-lg font-bold ${getBiasColor(sig.title === "Bullish" ? "Bullish" : sig.bias)}`}>
