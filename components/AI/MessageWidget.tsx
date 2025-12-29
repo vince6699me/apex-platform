@@ -5,6 +5,7 @@ import { cn } from "../ui/primitives";
 
 interface MessageWidgetProps {
   msg: AIChatMessage;
+  key?: React.Key;
 }
 
 export function MessageWidget({ msg }: MessageWidgetProps) {
