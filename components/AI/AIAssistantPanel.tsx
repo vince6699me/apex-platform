@@ -5,6 +5,7 @@ import { Button, Input, Badge } from "../ui/primitives";
 import { aiApi } from "../../api/aiApi";
 import { AIChatMessage } from "../../services/aiAssistant";
 import { cn } from "../ui/primitives";
+import { MessageWidget } from "./MessageWidget";
 
 export function AIAssistantPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [input, setInput] = useState("");
@@ -96,17 +97,7 @@ export function AIAssistantPanel({ isOpen, onClose }: { isOpen: boolean; onClose
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg) => (
-            <div key={msg.id} className={cn("flex flex-col max-w-[90%]", msg.role === "user" ? "ml-auto items-end" : "mr-auto items-start")}>
-              <div className={cn(
-                "px-3 py-2 rounded-xl text-sm shadow-sm",
-                msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
-              )}>
-                {msg.content}
-              </div>
-              <span className="text-[10px] text-muted-foreground mt-1">
-                {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-              </span>
-            </div>
+            <MessageWidget key={msg.id} msg={msg} />
           ))}
           {isTyping && <div className="text-xs text-muted-foreground animate-pulse">Gemini is thinking...</div>}
           <div ref={messagesEndRef} />
