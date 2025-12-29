@@ -239,7 +239,14 @@ if short
                         <Card key={sig.id} className="bg-card/60 border-border/60 transition-colors hover:bg-card/80">
                             <CardContent className="p-4 space-y-2">
                                 <div className="flex justify-between items-start">
-                                    <div className="text-xs text-muted-foreground">{sig.subtitle}</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-xs text-muted-foreground">{sig.subtitle}</div>
+                                        {sig.bias && (
+                                            <Badge variant={getBadgeVariant(sig.bias)} className="text-[10px] h-4 px-1">
+                                                {sig.bias as any}
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <Badge variant="secondary" className="bg-muted text-xs">{sig.edge}% edge</Badge>
                                 </div>
                                 <div>
