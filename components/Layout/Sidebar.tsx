@@ -1,13 +1,11 @@
-
 import React from 'react';
 import { NavLink, useLocation } from "react-router-dom";
 import { cn, Button, Tooltip, TooltipTrigger, TooltipContent } from "../ui/primitives";
-import { LayoutDashboard, TrendingUp, Wallet, ListTodo, LineChart, Brain, Settings, BarChart3, Bell, Radar, ChevronLeft, Menu } from "lucide-react";
+import { LayoutDashboard, TrendingUp, LineChart, Brain, Settings, BarChart3, Bell, Radar, ChevronLeft, Menu, Globe } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Portfolio", href: "/portfolio", icon: Wallet },
-  { name: "Watchlist", href: "/watchlist", icon: ListTodo },
+  { name: "Markets", href: "/markets", icon: Globe },
   { name: "Technical Analysis", href: "/technical-analysis", icon: TrendingUp },
   { name: "Charts", href: "/charts", icon: LineChart },
   { name: "Risk Management", href: "/risk", icon: BarChart3 },

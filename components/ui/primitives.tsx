@@ -82,9 +82,11 @@ const badgeVariants = cva("inline-flex items-center rounded-md border px-2.5 py-
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
   className?: string;
   variant?: "default" | "secondary" | "destructive" | "outline" | null;
+  children?: React.ReactNode;
+  key?: React.Key;
 }
-export const Badge = ({ className, variant, ...props }: BadgeProps) => (
-  <div className={cn(badgeVariants({ variant }), className)} {...props} />
+export const Badge = ({ className, variant, children, ...props }: BadgeProps) => (
+  <div className={cn(badgeVariants({ variant }), className)} {...props}>{children}</div>
 );
 
 // Label
@@ -172,3 +174,14 @@ export const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAtt
 export const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(({ className, ...props }, ref) => <tr ref={ref} className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", className)} {...props} />);
 export const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(({ className, ...props }, ref) => <th ref={ref} className={cn("h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0", className)} {...props} />);
 export const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(({ className, ...props }, ref) => <td ref={ref} className={cn("p-2 align-middle [&:has([role=checkbox])]:pr-0", className)} {...props} />);
+
+// Progress
+export const Progress = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { value?: number }>(({ className, value = 0, ...props }, ref) => (
+  <div ref={ref} className={cn("relative h-2 w-full overflow-hidden rounded-full bg-secondary", className)} {...props}>
+    <div 
+      className="h-full bg-primary transition-all duration-300 ease-in-out" 
+      style={{ width: `${Math.min(100, Math.max(0, value))}%` }} 
+    />
+  </div>
+));
+Progress.displayName = "Progress";

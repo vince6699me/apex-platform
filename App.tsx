@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Toaster, TooltipProvider } from "./components/ui/primitives";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,15 +6,14 @@ import { Sidebar } from "./components/Layout/Sidebar";
 import { Header } from "./components/Layout/Header";
 import { AIAssistantPanel } from "./components/AI/AIAssistantPanel";
 import Dashboard from "./pages/Dashboard";
-import Portfolio from "./pages/Portfolio";
-import Watchlist from "./pages/Watchlist";
+import Markets from "./pages/Markets";
 import TechnicalAnalysis from "./pages/TechnicalAnalysis";
 import Charts from "./pages/Charts";
 import RiskManagement from "./pages/RiskManagement";
 import AIIntelligence from "./pages/AIIntelligence";
+import TradingIntelligence from "./pages/TradingIntelligence";
 import Settings from "./pages/Settings";
 import Alerts from "./pages/Alerts";
-import TradingIntelligence from "./pages/TradingIntelligence";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,8 +34,7 @@ const App = () => {
               <main className="flex-1 overflow-y-auto">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/watchlist" element={<Watchlist />} />
+                  <Route path="/markets" element={<Markets />} />
                   <Route path="/technical-analysis" element={<TechnicalAnalysis />} />
                   <Route path="/charts" element={<Charts />} />
                   <Route path="/risk" element={<RiskManagement />} />

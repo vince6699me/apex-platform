@@ -257,3 +257,599 @@ export interface DetailedConsensusAnalysis {
   conflictDescription: string;
   timeframes: DetailedTimeframeData[];
 }
+
+// ============================================================================
+// SMC (Smart Money Concepts) Types
+// ============================================================================
+
+export interface OrderBlock {
+  /** Type of order block */
+  type: "Bullish" | "Bearish";
+  /** Candle index where order block starts */
+  startIndex: number;
+  /** Candle index where order block ends */
+  endIndex: number;
+  /** High price of the order block zone */
+  high: number;
+  /** Low price of the order block zone */
+  low: number;
+  /** Quality ranking based on confluence */
+  quality: "High" | "Medium" | "Low";
+  /** Position relative to move */
+  discountPremium: "Discount" | "Premium" | "Equilibrium";
+  /** Whether FVG exists within/below/above */
+  hasFVG: boolean;
+  /** Whether liquidity is nearby */
+  hasLiquidity: boolean;
+  /** Timestamp for reference */
+  timestamp: number;
+}
+
+export interface FairValueGap {
+  /** Type of FVG */
+  type: "Bullish" | "Bearish";
+  /** Candle index where FVG starts */
+  startIndex: number;
+  /** Candle index where FVG ends */
+  endIndex: number;
+  /** High price (for bullish) or low price (for bearish) */
+  priceLevel: number;
+  /** Gap size in pips/points */
+  size: number;
+  /** Strength ranking */
+  strength: "Strong" | "Medium" | "Weak";
+  /** Whether price has returned to fill this gap */
+  mitigated: boolean;
+  /** Mitigation price if mitigated */
+  mitigationPrice?: number;
+  /** Timestamp */
+  timestamp: number;
+}
+
+export interface LiquidityZone {
+  /** Type of liquidity */
+  type: "SwingHigh" | "SwingLow" | "RoundNumber" | "FractalHigh" | "FractalLow" | "DayHigh" | "DayLow" | "WeekHigh" | "WeekLow";
+  /** Price level */
+  price: number;
+  /** Strength based on touches */
+  strength: number;
+  /** Number of times tested */
+  grabCount: number;
+  /** Whether liquidity has been grabbed */
+  grabbed: boolean;
+  /** Timestamp of last test */
+  lastTested: number;
+}
+
+export interface BreakOfStructure {
+  /** Direction of BOS */
+  type: "Bullish" | "Bearish";
+  /** Index where BOS occurred */
+  index: number;
+  /** Price level of BOS */
+  price: number;
+  /** Previous swing point */
+  previousSwing: number;
+  /** Confidence level */
+  confidence: number;
+  /** Whether this confirmed trend continuation */
+  trendContinuation: boolean;
+}
+
+export interface ChangeOfCharacter {
+  /** Direction of CHOCH */
+  type: "Bullish" | "Bearish";
+  /** Index where CHOCH occurred */
+  index: number;
+  /** Price level */
+  price: number;
+  /** Supply/Demand zone that was broken */
+  zoneType: "Supply" | "Demand";
+  /** Confidence level */
+  confidence: number;
+  /** Indicates potential trend reversal */
+  reversalSignal: boolean;
+}
+
+export interface MarketStructureShift {
+  /** Direction of MSS */
+  type: "Bullish" | "Bearish";
+  /** Index where MSS occurred */
+  index: number;
+  /** Price level */
+  price: number;
+  /** Extreme zone that was broken */
+  zoneType: "Demand" | "Supply";
+  /** Confidence level */
+  confidence: number;
+}
+
+export interface PremiumDiscountResult {
+  position: "Premium" | "Discount" | "Equilibrium";
+  percentage: number;
+  entryPrice: number;
+  moveOrigin: number;
+  moveExtreme: number;
+  description: string;
+}
+
+export interface OTEResult {
+  entryPrice: number;
+  fibLevel: number;
+  zoneDescription: string;
+  riskRewardFavorable: boolean;
+}
+
+export interface SMCAnalysis {
+  orderBlocks: OrderBlock[];
+  fairValueGaps: FairValueGap[];
+  liquidityZones: LiquidityZone[];
+  bos: BreakOfStructure[];
+  choch?: ChangeOfCharacter;
+  mss?: MarketStructureShift;
+  currentBias: "Bullish" | "Bearish" | "Neutral";
+  trendStrength: number;
+  premiumDiscount: PremiumDiscountResult;
+  optimalEntry?: OTEResult;
+}
+
+// ============================================================================
+// Kill Zone Types
+// ============================================================================
+
+export interface KillZone {
+  /** Name of the kill zone */
+  name: string;
+  /** Start hour in EST (0-23) */
+  startHour: number;
+  /** End hour in EST (0-23) */
+  endHour: number;
+  /** Array of recommended pairs */
+  pairs: string[];
+  /** Description of what this zone is best for */
+  bestFor: string;
+  /** Volatility level */
+  volatility: "Low" | "Medium" | "High";
+  /** Typical trading direction bias */
+  directionBias: "Long" | "Short" | "Neutral" | "Mixed";
+}
+
+export interface ActiveKillZone {
+  /** Current active zone */
+  zone: KillZone | null;
+  /** Time remaining in zone (minutes) */
+  timeRemaining: number;
+  /** Whether we're in the zone */
+  isActive: boolean;
+  /** Current hour in EST */
+  currentHour: number;
+}
+
+// ============================================================================
+// Trade Execution Types
+// ============================================================================
+
+export interface TradeSetup {
+  /** Unique ID for the setup */
+  id: string;
+  /** Symbol being traded */
+  symbol: string;
+  /** Direction of the trade */
+  direction: "Bullish" | "Bearish";
+  /** Entry zone price */
+  entryPrice: number;
+  /** Stop loss price */
+  stopLoss: number;
+  /** Take profit levels */
+  takeProfits: number[];
+  /** Risk/Reward ratio */
+  riskReward: number;
+  /** Order block if applicable */
+  orderBlock?: OrderBlock;
+  /** FVG if applicable */
+  fvg?: FairValueGap;
+  /** Liquidity zone if applicable */
+  liquidityZone?: LiquidityZone;
+  /** Kill zone name */
+  killZone: string;
+  /** Confidence score */
+  confidence: number;
+  /** Premium/Discount status */
+  premiumDiscount: "Premium" | "Discount" | "Equilibrium";
+  /** OTE level if applicable */
+  ote?: number;
+  /** Timestamp of setup */
+  timestamp: number;
+}
+
+export interface TradeSignal {
+  /** Signal ID */
+  id: string;
+  /** Type of signal */
+  type: "SMC" | "Technical" | "AI" | "Sentiment";
+  /** Signal name */
+  name: string;
+  /** Description */
+  description: string;
+  /** Bias direction */
+  bias: SignalDirection;
+  /** Strength 0-100 */
+  strength: number;
+  /** Timeframe */
+  timeframe: string;
+  /** Symbol */
+  symbol: string;
+  /** Created at */
+  createdAt: number;
+}
+
+// ============================================================================
+// MULTI-ASSET TYPES
+// ============================================================================
+
+export type AssetClass = "forex" | "crypto" | "commodity" | "index" | "stock";
+
+export interface AssetConfig {
+  symbol: string;
+  name: string;
+  assetClass: AssetClass;
+  baseCurrency?: string;
+  quoteCurrency?: string;
+  enabled: boolean;
+}
+
+export interface MultiAssetQuote extends Quote {
+  assetClass: AssetClass;
+  bid?: number;
+  ask?: number;
+  spread?: number;
+  dailyChange?: number;
+  dailyChangePercent?: number;
+  volume24h?: string;
+  marketCap?: string;
+}
+
+export interface MultiAssetHistory extends OHLCV {
+  volume?: number;
+  turnover?: number;
+}
+
+export interface WatchlistItemMulti extends WatchlistItem {
+  assetClass: AssetClass;
+  bid?: number;
+  ask?: number;
+  spread?: number;
+  dailyChangePercent: number;
+}
+
+// ============================================================================
+// NEWS TYPES
+// ============================================================================
+
+export interface NewsArticle {
+  id: string;
+  headline: string;
+  source: string;
+  url?: string;
+  description?: string;
+  author?: string;
+  category?: string;
+  timestamp: number;
+  sentiment: number; // -1 to 1
+  relevance?: number; // 0 to 1
+}
+
+export interface NewsSource {
+  id: string;
+  name: string;
+  category: "general" | "crypto" | "forex" | "commodity" | "stock";
+  url?: string;
+  enabled: boolean;
+}
+
+export interface NewsFilter {
+  categories?: string[];
+  sources?: string[];
+  keywords?: string[];
+  dateRange?: {
+    start: number;
+    end: number;
+  };
+  sentiment?: "positive" | "negative" | "all";
+  limit?: number;
+}
+
+export interface NewsSentiment {
+  overall: number; // -1 to 1
+  bullish: number; // count
+  bearish: number; // count
+  neutral: number; // count
+  topStories: NewsArticle[];
+}
+
+export interface EconomicEvent {
+  id: string;
+  event: string;
+  country: string;
+  currency?: string;
+  impact: "High" | "Medium" | "Low";
+  time: string; // ISO time
+  forecast?: string;
+  previous?: string;
+  actual?: string;
+}
+
+export interface EconomicCalendar {
+  date: string;
+  events: EconomicEvent[];
+}
+
+// ============================================================================
+// SOCIAL SENTIMENT TYPES
+// ============================================================================
+
+export interface Tweet {
+  id: string;
+  text: string;
+  author: string;
+  username: string;
+  followers: number;
+  following?: number;
+  timestamp: number;
+  sentiment: number; // -1 to 1
+  engagement: number; // likes + retweets + replies
+  url?: string;
+}
+
+export interface RedditPost {
+  id: string;
+  title: string;
+  body?: string;
+  subreddit: string;
+  author: string;
+  upvotes: number;
+  comments: number;
+  timestamp: number;
+  sentiment: number; // -1 to 1
+  url?: string;
+}
+
+export interface SocialSentiment {
+  twitter: {
+    overall: number;
+    label: "Bullish" | "Bearish" | "Neutral";
+    tweetCount: number;
+    topTweet?: Tweet;
+  };
+  reddit: {
+    subreddits: {
+      name: string;
+      score: number;
+      postCount: number;
+    }[];
+    overall: number;
+    label: "Bullish" | "Bearish" | "Neutral";
+    topPost?: RedditPost;
+  };
+  combined: {
+    score: number;
+    label: "Bullish" | "Bearish" | "Neutral";
+    confidence: number;
+  };
+}
+
+export interface TrendingTag {
+  tag: string;
+  volume: number;
+  sentiment?: number;
+}
+
+export interface SocialSearchResult {
+  query: string;
+  tweets: Tweet[];
+  redditPosts: RedditPost[];
+  overallSentiment: number;
+  label: "Bullish" | "Bearish" | "Neutral";
+}
+
+export interface CryptoSentiment {
+  overall: number;
+  label: "Bullish" | "Bearish" | "Neutral";
+  coins: {
+    symbol: string;
+    sentiment: number;
+    mentions: number;
+    trending: boolean;
+  }[];
+}
+
+// ============================================================================
+// BACKTEST TYPES (Already defined - ensure production ready)
+// ============================================================================
+
+export interface BacktestConfig {
+  /** Initial capital for backtest */
+  initialCapital: number;
+  /** Position size as % of capital */
+  positionSize: number;
+  /** Risk per trade as % of capital */
+  riskPercent: number;
+  /** Maximum concurrent positions */
+  maxPositions: number;
+  /** Spread in pips/points */
+  spread: number;
+  /** Commission per trade */
+  commission: number;
+  /** Stop loss multiplier for OB sizing */
+  slMultiplier: number;
+  /** Take profit multiplier (R:R ratio) */
+  tpMultiplier: number;
+  /** Enable order block strategy */
+  enableOB: boolean;
+  /** Enable FVG strategy */
+  enableFVG: boolean;
+  /** Enable CHOCH strategy */
+  enableCHOCH: boolean;
+  /** Enable Premium/Discount strategy */
+  enablePD: boolean;
+  /** Filter by trend direction */
+  trendFilter: boolean;
+}
+
+export interface BacktestTrade {
+  id: string;
+  entryIndex: number;
+  exitIndex: number;
+  entryTime: number;
+  exitTime: number;
+  entryPrice: number;
+  exitPrice: number;
+  direction: "long" | "short";
+  pnl: number;
+  pnlPercent: number;
+  setup: string;
+  reason: string;
+  holdingPeriod: number;
+  smcContext?: {
+    orderBlock?: any;
+    fvg?: any;
+    liquidity?: any;
+    trend: string;
+    structure: string;
+    premiumDiscount: string;
+  };
+}
+
+export interface BacktestResult {
+  totalTrades: number;
+  wins: number;
+  losses: number;
+  breakevens: number;
+  winRate: number;
+  profitFactor: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  averageWin: number;
+  averageLoss: number;
+  maxDrawdown: number;
+  sharpeRatio: number;
+  sortinoRatio: number;
+  averageTradeDuration: number;
+  bestTrade: number;
+  worstTrade: number;
+  consecutiveWins: number;
+  consecutiveLosses: number;
+}
+
+export interface BacktestEquityCurve {
+  time: number[];
+  equity: number[];
+  drawdown: number[];
+}
+
+export interface BacktestReport {
+  config: BacktestConfig;
+  result: BacktestResult;
+  trades: BacktestTrade[];
+  equityCurve: BacktestEquityCurve;
+  monthlyReturns: Record<string, number>;
+  setupStats: Record<string, { trades: number; wins: number; losses: number; avgPnL: number }>;
+}
+
+// ============================================================================
+// TRADE LOGGER TYPES (Already defined - ensure production ready)
+// ============================================================================
+
+export interface TradeLog {
+  id: string;
+  symbol: string;
+  direction: "long" | "short";
+  entryTime: number;
+  exitTime?: number;
+  entryPrice: number;
+  exitPrice?: number;
+  stopLoss: number;
+  takeProfit?: number;
+  positionSize: number;
+  riskAmount: number;
+  rewardAmount?: number;
+  pnl?: number;
+  pnlPercent?: number;
+  status: "open" | "closed" | "cancelled";
+  outcome?: "win" | "loss" | "breakeven";
+  riskReward?: number;
+  
+  // SMC Context
+  setup: string;
+  timeframe: string;
+  killZone?: string;
+  orderBlockId?: string;
+  fvgId?: string;
+  liquidityZone?: string;
+  
+  // Market Context
+  trend: "bullish" | "bearish" | "ranging";
+  structure: string;
+  premiumDiscount: "premium" | "discount" | "equilibrium";
+  
+  // Journal
+  notes: string;
+  screenshot?: string;
+  lessons?: string[];
+  
+  // Timestamps
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface TradeStats {
+  totalTrades: number;
+  wins: number;
+  losses: number;
+  breakevens: number;
+  winRate: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  averageWin: number;
+  averageLoss: number;
+  profitFactor: number;
+  averageRiskReward: number;
+  longestWinStreak: number;
+  longestLossStreak: number;
+  currentStreak: number;
+  averageTradeDuration: number;
+  bestTrade: number;
+  worstTrade: number;
+  
+  // SMC-specific stats
+  setupPerformance: Record<string, { wins: number; losses: number; avgPnL: number }>;
+  timeframePerformance: Record<string, { wins: number; losses: number; avgPnL: number }>;
+  killZonePerformance: Record<string, { wins: number; losses: number; avgPnL: number }>;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: number;
+  type: "trade" | "observation" | "lesson" | "strategy";
+  title: string;
+  content: string;
+  tags: string[];
+  trades?: string[];
+  emotions?: {
+    feeling: string;
+    intensity: 1 | 2 | 3 | 4 | 5;
+  };
+}
+
+export interface TradeFilter {
+  symbol?: string;
+  direction?: "long" | "short";
+  status?: "open" | "closed";
+  outcome?: "win" | "loss" | "breakeven";
+  setup?: string;
+  timeframe?: string;
+  startDate?: number;
+  endDate?: number;
+  minPnL?: number;
+  maxPnL?: number;
+}

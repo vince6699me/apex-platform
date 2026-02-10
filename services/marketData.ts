@@ -3,8 +3,9 @@ import { OHLCV, Quote, WatchlistItem, Position, NewsHeadline } from "../types";
 import { TechnicalIndicatorService } from "./technicalIndicators";
 
 export class MarketDataService {
-  private static ALPHA_VANTAGE_KEY = (process.env as any).ALPHA_VANTAGE_API_KEY;
-  private static POLYGON_KEY = (process.env as any).POLYGON_API_KEY;
+  private static ALPHA_VANTAGE_KEY = (process.env as any).ALPHA_VANTAGE_API_KEY || "J8L4P4BG4VQWWCXL";
+  private static POLYGON_KEY = (process.env as any).POLYGON_API_KEY || "oL2nKPuUv5vYZF1puDuXmAtS8hnlVhpm";
+  private static FINNHUB_KEY = (process.env as any).FINNHUB_API_KEY || "d2niri1r01qvm11278tgd2niri1r01qvm11278u0";
 
   private static symbols = ["AAPL", "TSLA", "MSFT", "NVDA", "GOOGL", "AMZN", "META"];
   private static companyNames: Record<string, string> = {
