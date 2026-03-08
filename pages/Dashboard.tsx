@@ -1,10 +1,14 @@
 
 import React, { useMemo, useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Badge } from "../components/ui/primitives";
+import { Card, CardContent, CardHeader, CardTitle, Badge, Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/primitives";
 import { WatchlistTable } from "../components/Watchlist/WatchlistTable";
 import { MultiAssetWatchlist } from "../components/Watchlist/MultiAssetWatchlist";
 import { MarketNews } from "../components/Dashboard/MarketNews";
 import { SMCPanel } from "../components/Dashboard/SMCPanel";
+import { COTPanel } from "../components/Dashboard/COTPanel";
+import { SentimentPanel } from "../components/Dashboard/SentimentPanel";
+import { ArbitragePanel } from "../components/Dashboard/ArbitragePanel";
+import { AllStrategiesDashboard } from "../components/Dashboard/AllStrategiesDashboard";
 import { Wallet, TrendingUp, Activity, AlertTriangle, ArrowUpRight, ArrowDownRight, Gauge } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { marketApi } from "../api/marketApi";
@@ -219,6 +223,22 @@ export default function Dashboard() {
         {/* SMC Analysis Panel */}
         <div className="mt-6">
           <SMCPanel symbol="AAPL" />
+        </div>
+
+        {/* AI Intelligence Dashboard - All Strategies */}
+        <div className="mt-6">
+          <AllStrategiesDashboard symbol="AAPL" />
+        </div>
+
+        {/* Strategy Panels */}
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <COTPanel symbol="AAPL" />
+          <SentimentPanel symbol="AAPL" />
+        </div>
+
+        {/* Arbitrage Panel */}
+        <div className="mt-6">
+          <ArbitragePanel symbol="BTC" />
         </div>
       </div>
     </div>
